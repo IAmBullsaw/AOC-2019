@@ -31,9 +31,3 @@
 *.out
 *.app
 
-# Build
-*Build/*
-*.cmake*
-CMakeFiles/*
-Makefile
-CMakeCache.txt
