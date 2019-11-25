@@ -1,28 +1,38 @@
 #! /usr/bin/bash
 
+# When true will stop script
+ALL_DONE=0;
+VERBOSE=1;
+
+function tell(){
+    if [ $VERBOSE ]; then 
+        echo "[$(basename $0)] $@";
+    fi
+} 
+
 function create_dir() {
     n=1;
-    all_done=0;
     dirname=$([ $n -lt 10 ] && echo "0$n" || "$n" );
     while  ! mkdir $dirname 2>/dev/null; do
         n=$((n + 1));
-        [ $n -gt 25 ] && { all_done=1; break; }
+        [ $n -gt 25 ] && { ALL_DONE=1; break; }
         dirname=$([ $n -lt 10 ] && echo "0$n" || echo "$n" );
     done
-   [ $all_done -ne 1 ] && echo "[$(basename $0)] created $dirname" || echo "[$(basename $0)] Congratulations, you are done!"
+   [ $ALL_DONE -ne 1 ] && tell "created $dirname" || tell "Congratulations, you are done!"
 } 
 
 function fill_dir() {
-   [ $all_done -eq 1 ] && return;  
+   [ $ALL_DONE -eq 1 ] && return;  
     echo -n "#include <iostream>
 #include <string>
 
 using namespace std;
-int main(int argc, char* argv) {
+int main(int argc, char** argv) {
 
 }
 " > $dirname/main.cc 
-    echo "[$(basename $0)] added $dirname/main.cc"
+    tell "added $dirname/main.cc";
+
     echo -n "CC := g++
 LINKERFLAGS := -lm
 CCFLAGS := -Wall -Wextra -Wpedantic -Werror 
@@ -30,10 +40,10 @@ CCFLAGS := -Wall -Wextra -Wpedantic -Werror
 all: main.out
 
 main.out: main.o
-	${CC} ${LINKERFLAGS} main.o -o main.out
+	\${CC} \${LINKERFLAGS} main.o -o main.out
 
 main.o: main.cc
-	${CC} -c ${CCFLAGS} main.cc
+	\${CC} -c \${CCFLAGS} main.cc
 
 clean:
 	rm *.o
@@ -43,7 +53,12 @@ run: all
 	./main.out infile.txt outfile.txt
 
     " > $dirname/Makefile
-    echo "[$(basename $0)] added $dirname/Makefile"
+
+    tell "added $dirname/Makefile";
+    touch $dirname/infile.txt;
+    tell "added $dirname/infile.txt";
+    touch $dirname/outfile.txt; 
+    tell "added $dirname/outfile.txt";
 }
 
 create_dir;
