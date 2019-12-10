@@ -28,31 +28,51 @@ istream& operator>>(istream& is, comma_sep<T,sep>& t) {
   return is;
 }
 
-bool handle_opcode(vector<int64_t> & intcode, int64_t const& index) {
+bool handle_opcode(vector<int64_t> & intcode, int64_t & index) {
   bool ret{true};
+  cout << "handle_opcode intcode:index = " << intcode[index] << ":" << index << "\n";
+  for (auto const& i : intcode) {
+    cout << i << ",";
+  }
+  cout << "\n";
   switch (intcode.at(index)) {
   case 1: {
     // add
-    intcode[index+3] = intcode[index+1] + intcode[index+2];
+    intcode[intcode[index+3]] = intcode[intcode[index+1]] + intcode[intcode[index+2]];
+    index += 4;
     break;
   }
   case 2: {
     // multiply
-    intcode[index+3] = intcode[index+1] * intcode[index+2];
+    intcode[intcode[index+3]] = intcode[intcode[index+1]] * intcode[intcode[index+2]];
+    index += 4;
     break;
   }
   case 99: {
     ret = false;
     break;
   }
+  default: {
+    cout << "\tSomething went wrong, opcode: " << intcode[index] << "\n";
+  }
   }
   return ret;
 }
+
 
 int main(int, char** argv) {
   fstream f{argv[1]};
 
   vector<int64_t> intcode{istream_iterator<comma_sep<int64_t>>(f),
                           istream_iterator<comma_sep<int64_t>>()};
+  // Fix the gravity
+  intcode[1] = 12;
+  intcode[2] = 2;
+  bool go_again{true};
+  int64_t index{0};
+  do
+    go_again = handle_opcode(intcode, index);
+  while (go_again);
 
+  cout << "result: "<< intcode[0] << "\n";
 }
