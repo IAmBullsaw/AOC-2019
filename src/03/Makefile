@@ -1,6 +1,6 @@
 CC := g++
 LINKERFLAGS := -lm
-CCFLAGS := -Wall -Wextra -Wpedantic -Werror 
+CCFLAGS := -std=c++14 -Wall -Wextra -Wpedantic -Werror 
 
 all: main.out
 
@@ -18,3 +18,4 @@ run: all
 	./main.out infile.txt outfile.txt
 
     
+
