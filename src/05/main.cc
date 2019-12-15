@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <iterator>
 #include <fstream>
@@ -29,9 +30,11 @@ istream& operator>>(istream& is, comma_sep<T,sep>& t) {
 }
 
 void print_intcode(vector<int64_t> const& intcode) {
-  cout << "intcode: ";
+  auto count{0};
   for (auto const& i : intcode) {
-    cout << i << ", ";
+    count++;
+    cout << setw(7) << i << ", ";
+    if (count % 10 == 0) cout << "\n";
   }
   cout << "\n";
 }
@@ -75,7 +78,8 @@ bool handle_opcode(vector<int64_t> & intcode, int64_t & index) {
     break;
   }
   default: {
-    cout << "\tSomething went wrong, opcode: " << intcode[index] << "\n";
+    cout << "\tSomething went wrong, opcode: " << intcode[index] << ", index: " << index << "\n";
+    print_intcode(intcode);
     exit(1);
   }
   }
