@@ -1,14 +1,14 @@
-#! /usr/bin/bash
+#! /bin/bash
 
 # When true will stop script
 ALL_DONE=0;
 VERBOSE=1;
 
 function tell(){
-    if [ $VERBOSE ]; then 
+    if [ $VERBOSE ]; then
         echo "[$(basename $0)] $@";
     fi
-} 
+}
 
 function create_dir() {
     n=1;
@@ -19,23 +19,27 @@ function create_dir() {
         dirname=$([ $n -lt 10 ] && echo "0$n" || echo "$n" );
     done
    [ $ALL_DONE -ne 1 ] && tell "created $dirname" || tell "Congratulations, you are done!"
-} 
+}
 
 function fill_dir() {
-   [ $ALL_DONE -eq 1 ] && return;  
+   [ $ALL_DONE -eq 1 ] && return;
     echo -n "#include <iostream>
 #include <string>
+#include <vector>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
-int main(int argc, char** argv) {
+int main(int, char** argv) {
+fstream f{argv[1]};
 
 }
-" > $dirname/main.cc 
+" > $dirname/main.cc
     tell "added $dirname/main.cc";
 
     echo -n "CC := g++
 LINKERFLAGS := -lm
-CCFLAGS := -Wall -Wextra -Wpedantic -Werror 
+CCFLAGS := -std=c++14 -Wall -Wextra -Wpedantic -Werror
 
 all: main.out
 
@@ -50,15 +54,13 @@ clean:
 	rm main.out
 
 run: all
-	./main.out infile.txt outfile.txt
+	./main.out infile.txt
 
     " > $dirname/Makefile
 
     tell "added $dirname/Makefile";
     touch $dirname/infile.txt;
     tell "added $dirname/infile.txt";
-    touch $dirname/outfile.txt; 
-    tell "added $dirname/outfile.txt";
 }
 
 create_dir;
