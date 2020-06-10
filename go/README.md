@@ -1,2 +1,2 @@
 # Go
-These solutions are for learning the programming language [Go](https://golang.org/). 
+These solutions are for learning the programming language [Go](https://golang.org/). :v:
